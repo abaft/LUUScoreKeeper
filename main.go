@@ -6,8 +6,8 @@ import (
 
 	"github.com/kataras/iris"
 	//"github.com/kataras/iris/websocket"
-  "LUUScoreKeeper/template"
-  "LUUScoreKeeper/scoreutils"
+  "github.com/abaft/LUUScoreKeeper/template"
+  "github.com/abaft/LUUScoreKeeper/scoreutils"
 )
 
 
@@ -39,5 +39,5 @@ func main() {
 	// http://localhost:8080
 	// http://localhost:8080
 	// write something, press submit, see the result.
-	app.Run(iris.Addr(":80"))
+	app.Run(iris.Addr(":8080"))
 }
