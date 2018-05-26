@@ -1,0 +1,30 @@
+<%!
+import "rifle/scoreutils"
+%>
+<%: func WebForm(scores []scoreutils.Score, buffer *bytes.Buffer) %>
+
+<%~ "index.html" %>
+
+
+<%@ body { %>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Dicipline</th>
+      <th scope="col">Score</th>
+      <th scope="col">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% for _ , s := range scores { %>
+    <tr>
+      <th ><%= s.Name %></th>
+      <td><%= s.GetDiscipline() %></td>
+      <td><%==i s.Score %></td>
+      <td>Unknown</td>
+    </td>
+  <% } %>
+  </tbody>
+</table>
+<% } %>
