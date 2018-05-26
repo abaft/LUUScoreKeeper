@@ -6,8 +6,8 @@ import (
 
 	"github.com/kataras/iris"
 	//"github.com/kataras/iris/websocket"
-  "rifle/template"
-  "rifle/scoreutils"
+  "LUUScoreKeeper/template"
+  "LUUScoreKeeper/scoreutils"
 )
 
 
