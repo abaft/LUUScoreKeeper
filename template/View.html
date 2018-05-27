@@ -1,7 +1,7 @@
 <%!
 import "github.com/abaft/LUUScoreKeeper/scoreutils"
 %>
-<%: func WebForm(scores []scoreutils.Score, buffer *bytes.Buffer) %>
+<%: func View(username string, topScore scoreutils.Score, buffer *bytes.Buffer) %>
 
 <%~ "index.html" %>
 
@@ -17,14 +17,6 @@ import "github.com/abaft/LUUScoreKeeper/scoreutils"
     </tr>
   </thead>
   <tbody>
-  <% for _ , s := range scores { %>
-    <tr>
-      <th ><%= s.Name %></th>
-      <td><%= s.GetDiscipline() %></td>
-      <td><%==i s.Score %></td>
-      <td>Unknown</td>
-    </td>
-  <% } %>
   </tbody>
 </table>
 <% } %>

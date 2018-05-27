@@ -2,42 +2,39 @@ package main
 
 import (
 	//"fmt"
-  "bytes"
-
 	"github.com/kataras/iris"
 	//"github.com/kataras/iris/websocket"
-  "github.com/abaft/LUUScoreKeeper/template"
-  "github.com/abaft/LUUScoreKeeper/scoreutils"
+	RT "github.com/abaft/LUUScoreKeeper/routes"
+	"github.com/boltdb/bolt"
+	"log"
 )
 
-
-var scores []scoreutils.Score
+//var scores []scoreutils.Score
 
 func main() {
-  app := iris.New()
 
-  app.Get("/", func(ctx iris.Context) {
-    buffer := new(bytes.Buffer)
-    template.WebForm(scores, buffer)
-    ctx.Write(buffer.Bytes())
-  })
+	// SETUP DATABASE
+	db, err := bolt.Open("users.db", 0600, nil)
 
-  app.Post("/", func(ctx iris.Context){
-    var score scoreutils.Score
-    score.Name = ctx.PostValue("uid")
-    score.Score , _ = ctx.PostValueInt64("score")
-    score.Discipline , _ = ctx.PostValueInt("discipline")
-    scores = append(scores, score)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    buffer := new(bytes.Buffer)
-    template.WebForm(scores, buffer)
-    ctx.Write(buffer.Bytes())
-  })
+	db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucketIfNotExists([]byte("userauth"))
+		return err
+	})
 
+	db.Close()
 
-	// x2
-	// http://localhost:8080
-	// http://localhost:8080
-	// write something, press submit, see the result.
+	app := iris.New()
+
+	app.Get("/", RT.LoginForm)
+	app.Post("/makeuser", RT.MakeUser)
+	app.Get("/view", RT.View)
+
+	app.Post("/login", RT.LoginUser)
+	app.Any("/logout", RT.LogoutUser)
+
 	app.Run(iris.Addr(":8080"))
 }
