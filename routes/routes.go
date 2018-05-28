@@ -18,7 +18,28 @@ var (
 
 func LoginForm(ctx iris.Context) {
 	buffer := new(bytes.Buffer)
-	TP.LoginForm(SU.GetScores(), buffer)
+	scores := SU.GetScores()
+
+	db, _ := bolt.Open("users.db", 0600, nil)
+	password := make([]byte, 32)
+	var (
+		averages  []float32
+		usernames []string
+	)
+
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("userauth"))
+		c := b.Cursor()
+
+		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+			averages = append(averages, SU.Average(SU.FindLast(scores, string(k), 0, 10)))
+			usernames = append(usernames, string(k))
+		}
+	})
+
+	db.Close()
+
+	TP.LoginForm(usernames, averages, buffer)
 	ctx.Write(buffer.Bytes())
 	buffer.Reset()
 }
@@ -59,7 +80,9 @@ func View(ctx iris.Context) {
 
 	buffer := new(bytes.Buffer)
 
-	TP.View(session.GetString("username"), SU.GetScores(), buffer)
+	scores := SU.GetScores()
+	scores = SU.FindLast(scores, session.GetString("username"), 0, 10)
+	TP.View(session.GetString("username"), scores, buffer)
 	ctx.Write(buffer.Bytes())
 	buffer.Reset()
 }

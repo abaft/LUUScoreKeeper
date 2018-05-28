@@ -63,36 +63,28 @@ func GetScores() []Score {
 }
 
 func FindLast(scores []Score, username string, discipline int, count uint) []Score {
-	tmp := make([]Score, count)
+	var tmp []Score
+	i := uint(0)
 
 	for _, s := range scores {
 		if s.Name == username && s.Discipline == discipline {
-			if s.Date.After(tmp[0].Date) {
-				tmp[0] = s
+			if i == count {
+				break
 			}
-		}
-	}
 
-	for i := uint(1); i < count; i++ {
-		for _, s := range scores {
-			if s.Name == username && s.Discipline == discipline {
-				if tmp[i-1].Date.Before(tmp[i].Date) && s.Date.After(tmp[i].Date) {
-					tmp[i] = s
-				}
-			}
+			tmp = append(tmp, s)
+			i++
 		}
 	}
 	return tmp
 }
 
-func Average(scores []Score, username string, discipline int) Score {
-	sum := 0
+func Average(scores []Score) float32 {
+	var sum float32 = 0.0
 	for _, s := range scores {
-		sum += s.Score
+		sum += float32(s.Score)
 	}
-	rtn := scores[0]
-	rtn.Score = sum / len(scores)
-	return rtn
+	return sum / float32(len(scores))
 }
 
 func (s Score) GetDiscipline() string {

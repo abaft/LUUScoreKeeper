@@ -11,8 +11,23 @@ import (
 
 <%@ body { %>
 <div class="row">
+  <div class="col-12">
+<div class="card">
+  <div class="card-header">
+    Stats for <%= username %>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Average</h5>
+    <p class="card-text"><%==f scoreutils.Average(topScore) %></p>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="row">
 <div class="col-md-3 col-12">
     <form method="post" action="add_score">
+      <h5 class="form-title">Add Score:</h5>
   
   	  <div class="form-group">
   			<label for="discipline">Discipline</label>
@@ -28,7 +43,7 @@ import (
   			<input type="text" class="form-control" id="score" name="score" placeholder="Outta 100" />
       </div>
 
-	  	<button type="submit" class="btn btn-primary">Add Record</button>
+	  	<button type="submit" class="btn btn-primary">Submit Record</button>
     </form>
 
     </div>
