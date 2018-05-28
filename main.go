@@ -22,6 +22,7 @@ func main() {
 
 	db.Update(func(tx *bolt.Tx) error {
 		tx.CreateBucketIfNotExists([]byte("userauth"))
+		tx.CreateBucketIfNotExists([]byte("scores"))
 		return err
 	})
 
@@ -30,11 +31,13 @@ func main() {
 	app := iris.New()
 
 	app.Get("/", RT.LoginForm)
-	app.Post("/makeuser", RT.MakeUser)
 	app.Get("/view", RT.View)
 
+	app.Post("/makeuser", RT.MakeUser)
+	app.Post("/add_score", RT.SubmitScore)
 	app.Post("/login", RT.LoginUser)
+
 	app.Any("/logout", RT.LogoutUser)
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(iris.Addr(":25565"))
 }

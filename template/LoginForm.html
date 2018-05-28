@@ -1,7 +1,7 @@
 <%!
 import "github.com/abaft/LUUScoreKeeper/scoreutils"
 %>
-<%: func LoginForm(topScore scoreutils.Score, buffer *bytes.Buffer) %>
+<%: func LoginForm(topScore []scoreutils.Score, buffer *bytes.Buffer) %>
 
 <%~ "index.html" %>
 
@@ -30,7 +30,24 @@ import "github.com/abaft/LUUScoreKeeper/scoreutils"
     </form>
   </div>
   <div class="col-12 col-md-5">
-    [Table here]
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Username</th>
+          <th scope="col">Dicipline</th>
+          <th scope="col">10 Detail Average</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% for _ , s := range topScore { %>
+        <tr>
+          <td ><%= s.Name %></td>
+          <td><%= s.GetDiscipline() %></td>
+          <td><%==i s.Score %></td>
+        </td>
+      <% } %>
+      </tbody>
+    </table>
   </div>
   </div>
 <% } %>

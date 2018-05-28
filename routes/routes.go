@@ -18,7 +18,7 @@ var (
 
 func LoginForm(ctx iris.Context) {
 	buffer := new(bytes.Buffer)
-	TP.LoginForm(SU.TopScores, buffer)
+	TP.LoginForm(SU.GetScores(), buffer)
 	ctx.Write(buffer.Bytes())
 	buffer.Reset()
 }
@@ -59,9 +59,22 @@ func View(ctx iris.Context) {
 
 	buffer := new(bytes.Buffer)
 
-	TP.View(session.GetString("username"), SU.TopScores, buffer)
+	TP.View(session.GetString("username"), SU.GetScores(), buffer)
 	ctx.Write(buffer.Bytes())
 	buffer.Reset()
+}
+
+func SubmitScore(ctx iris.Context) {
+	session := sess.Start(ctx)
+	if !session.GetBooleanDefault("auth", false) {
+		ctx.Redirect("/", 302)
+		return
+	}
+
+	score, _ := ctx.PostValueInt("score")
+	discipline, _ := ctx.PostValueInt("discipline")
+	SU.AddScore(score, discipline, session.GetString("username"))
+	ctx.Redirect("/view", 302)
 }
 
 func MakeUser(ctx iris.Context) {
@@ -81,15 +94,19 @@ func MakeUser(ctx iris.Context) {
 		rawInputHash := sha256.New()
 		rawInputHash.Write([]byte(ctx.PostValue("password")))
 
-		err := b.Put([]byte(ctx.PostValue("username")), rawInputHash.Sum(nil)[:])
-		return err
+		if b.Get([]byte(ctx.PostValue("username"))) == nil {
+			err := b.Put([]byte(ctx.PostValue("username")), rawInputHash.Sum(nil)[:])
+			session := sess.Start(ctx)
+			session.Set("username", ctx.PostValue("username"))
+			session.Set("auth", true)
+
+			ctx.Redirect("/view", 302)
+			return err
+		} else {
+			ctx.Redirect("/", 302)
+			return nil
+		}
 	})
-
-	session := sess.Start(ctx)
-	session.Set("username", ctx.PostValue("username"))
-	session.Set("auth", true)
-
-	ctx.Redirect("/view", 302)
 
 	defer db.Close()
 }

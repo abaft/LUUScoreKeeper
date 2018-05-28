@@ -1,22 +1,60 @@
 <%!
-import "github.com/abaft/LUUScoreKeeper/scoreutils"
+import (
+  "github.com/abaft/LUUScoreKeeper/scoreutils"
+  "time"
+)
 %>
-<%: func View(username string, topScore scoreutils.Score, buffer *bytes.Buffer) %>
+<%: func View(username string, topScore[] scoreutils.Score, buffer *bytes.Buffer) %>
 
 <%~ "index.html" %>
 
 
 <%@ body { %>
+<div class="row">
+<div class="col-md-3 col-12">
+    <form method="post" action="add_score">
+  
+  	  <div class="form-group">
+  			<label for="discipline">Discipline</label>
+  			<select class="form-control" name="discipline" id="discipline">
+  			  <option value="0">.22lr Prone</option>
+  			  <option value="1">.22lr Kneeling</option>
+  			  <option value="2">.22lr Offhand Carbine</option>
+  			</select>
+      </div>
+  
+  	  <div class="form-group">
+  		  <label for="score">Score</label>
+  			<input type="text" class="form-control" id="score" name="score" placeholder="Outta 100" />
+      </div>
+
+	  	<button type="submit" class="btn btn-primary">Add Record</button>
+    </form>
+
+    </div>
+
+<div class="col-12 col-md-9">
 <table class="table table-striped">
   <thead>
     <tr>
       <th scope="col">Username</th>
       <th scope="col">Dicipline</th>
       <th scope="col">Score</th>
-      <th scope="col">Name</th>
+      <th scope="col">Date</th>
     </tr>
   </thead>
   <tbody>
+<% for _ , s := range topScore { %>
+        <tr>
+          <td ><%= s.Name %></td>
+          <td><%= s.GetDiscipline() %></td>
+          <td><%==i s.Score %></td>
+          <td><%= s.Date.Format("1/2/2006 15:04") %></td>
+        </td>
+<% } %>
+
   </tbody>
 </table>
+</div>
+</div>
 <% } %>
