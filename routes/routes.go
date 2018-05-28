@@ -21,7 +21,6 @@ func LoginForm(ctx iris.Context) {
 	scores := SU.GetScores()
 
 	db, _ := bolt.Open("users.db", 0600, nil)
-	password := make([]byte, 32)
 	var (
 		averages  []float32
 		usernames []string
@@ -31,10 +30,11 @@ func LoginForm(ctx iris.Context) {
 		b := tx.Bucket([]byte("userauth"))
 		c := b.Cursor()
 
-		for k, v := c.Last(); k != nil; k, v = c.Prev() {
+		for k, _ := c.Last(); k != nil; k, _ = c.Prev() {
 			averages = append(averages, SU.Average(SU.FindLast(scores, string(k), 0, 10)))
 			usernames = append(usernames, string(k))
 		}
+		return nil
 	})
 
 	db.Close()
