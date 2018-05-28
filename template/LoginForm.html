@@ -7,12 +7,13 @@ import "github.com/abaft/LUUScoreKeeper/scoreutils"
 
 
 <%@ body { %>
-  <div class="row col">
-    <h2>Top Score: Ben</h2>
-    <br />
-    Score: 100
+  <div class="row">
+    <div class="col-12">
+      <h1>Login</h1>
+    </div>
   </div>
-  <div class="row col">
+  <div class="row">
+  <div class="col-12 col-md-7">
     <form method="post">
   	  <div class="form-group">
   		  <label for="username">Username</label>
@@ -27,5 +28,9 @@ import "github.com/abaft/LUUScoreKeeper/scoreutils"
 	  	<button type="submit" class="btn btn-primary" formaction="login">Login</button>
 	  	<button type="submit" class="btn btn-primary" formaction="makeuser">Create User</button>
     </form>
+  </div>
+  <div class="col-12 col-md-5">
+    [Table here]
+  </div>
   </div>
 <% } %>

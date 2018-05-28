@@ -25,11 +25,11 @@ func LoginForm(ctx iris.Context) {
 
 func LoginUser(ctx iris.Context) {
 	db, _ := bolt.Open("users.db", 0600, nil)
-	var password []byte
+	password := make([]byte, 32)
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("userauth"))
-		password = b.Get([]byte(ctx.PostValue("username")))
+		copy(password, b.Get([]byte(ctx.PostValue("username"))))
 		return nil
 	})
 
@@ -38,13 +38,10 @@ func LoginUser(ctx iris.Context) {
 	rawInputHash := sha256.New()
 	rawInputHash.Write([]byte(ctx.PostValue("password")))
 
-	log.Println(password)
-	log.Println(rawInputHash.Sum(nil))
-
-	//if password == nil {
-	//	ctx.Redirect("/", 302)
-	//	return
-	//}
+	if password == nil || !bytes.Equal(rawInputHash.Sum(nil)[:], password) {
+		ctx.Redirect("/", 302)
+		return
+	}
 
 	session := sess.Start(ctx)
 	session.Set("username", ctx.PostValue("username"))
@@ -56,7 +53,7 @@ func LoginUser(ctx iris.Context) {
 func View(ctx iris.Context) {
 	session := sess.Start(ctx)
 	if !session.GetBooleanDefault("auth", false) {
-		ctx.Redirect("/view", 302)
+		ctx.Redirect("/", 302)
 		return
 	}
 
@@ -68,6 +65,12 @@ func View(ctx iris.Context) {
 }
 
 func MakeUser(ctx iris.Context) {
+
+	if ctx.PostValue("password") == "" {
+		ctx.Redirect("/", 302)
+		return
+	}
+
 	db, err := bolt.Open("users.db", 0600, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +81,7 @@ func MakeUser(ctx iris.Context) {
 		rawInputHash := sha256.New()
 		rawInputHash.Write([]byte(ctx.PostValue("password")))
 
-		err := b.Put([]byte(ctx.PostValue("username")), []byte(rawInputHash.Sum(nil)[:32]))
+		err := b.Put([]byte(ctx.PostValue("username")), rawInputHash.Sum(nil)[:])
 		return err
 	})
 
